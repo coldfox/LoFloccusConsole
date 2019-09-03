@@ -7,6 +7,10 @@ package main
 import (
 	"context"
 	"math/rand"
+	"os"
+	"os/exec"
+	"path"
+	"path/filepath"
 	"time"
 
 	"golang.org/x/net/webdav"
@@ -50,9 +54,22 @@ func exitApp() {
 	serverStop()
 }
 
+/*获取当前文件执行的路径*/
+func GetCurPath() string {
+	file, _ := exec.LookPath(os.Args[0])
+
+	//得到全路径，比如在windows下E:\\golang\\test\\a.exe
+	path, _ := filepath.Abs(file)
+
+	rst := filepath.Dir(path)
+
+	return rst
+}
+
 func loadAppConfig() {
+	cfgPath := path.Join(GetCurPath(), configFile)
 	var err error
-	cfg, err = ini.Load(configFile)
+	cfg, err = ini.Load(cfgPath)
 	if err != nil {
 		log.Printf("No config file %v found. Creating a new one from defaults.", err)
 		cfg = ini.Empty()
@@ -92,7 +109,8 @@ func serverStart() {
 
 	log.Printf("WEBDAV: Starting...")
 
-	dir := webdav.Dir(serverConfig.dir)
+	bookMarksdir := path.Join(GetCurPath(), serverConfig.dir)
+	dir := webdav.Dir(bookMarksdir)
 	mux := http.NewServeMux()
 	srvWebdav := &webdav.Handler{
 		FileSystem: dir,
