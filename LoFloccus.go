@@ -143,8 +143,14 @@ func serverStart() {
 			return
 		}
 
+		//支持customdav方式的数据
+		valid := false
+		if strings.Contains(request.RequestURI, "customdav") {
+			valid = true
+		}
+
 		// Restrict WebDav to the current folder & read/writes to .xbel files
-		if (!strings.HasSuffix(request.RequestURI, ".xbel") && !strings.HasSuffix(request.RequestURI, ".xbel.lock") && request.RequestURI != "/") || (request.RequestURI == "/" && (request.Method != "HEAD" && request.Method != "PROPFIND")) {
+		if (!valid && !strings.HasSuffix(request.RequestURI, ".xbel") && !strings.HasSuffix(request.RequestURI, ".xbel.lock") && request.RequestURI != "/") || (request.RequestURI == "/" && (request.Method != "HEAD" && request.Method != "PROPFIND")) {
 			errorFsAccessMsg := "LoFloccus: unauthorized filesystem access detected. LoFloccus WebDAV server is restricted to '*.xbel' files."
 			log.Printf(request.RequestURI)
 			log.Printf(request.Method)
