@@ -1,0 +1,12 @@
+*.bak
+*.dat
+*.dir
+.idea
+deploy
+windows
+deploy
+rcc*
+*.syso
+*.ini
+.vscode
+
